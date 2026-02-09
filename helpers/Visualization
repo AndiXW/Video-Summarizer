@@ -1,0 +1,55 @@
+
+#Script used to visualize our loss_summary.csv as a parallel coordinates plot
+
+import pandas as pd
+import plotly.graph_objects as go
+
+data = [
+    (8, 2e-5, 2, 1.0129, 1.001593113),
+    (8, 2e-5, 3, 0.6164, 0.984580815),
+    (8, 2e-5, 4, 0.3404, 1.126560688),
+    (8, 3e-5, 2, 0.1835, 1.297936082),
+    (8, 3e-5, 3, 0.1412, 1.328019857),
+    (8, 3e-5, 4, 0.1019, 1.373820186),
+    (8, 5e-5, 2, 0.0762, 1.436962605),
+    (8, 5e-5, 3, 0.0601, 1.442512631),
+    (8, 5e-5, 4, 0.0515, 1.454697728),
+    (16, 2e-5, 2, 0.0332, 1.486177444),
+    (16, 2e-5, 3, 0.021, 1.542093396),
+    (16, 2e-5, 4, 0.0146, 1.601916552),
+    (16, 3e-5, 2, 0.0088, 1.656179667),
+    (16, 3e-5, 3, 0.0098, 1.656452894),
+    (16, 3e-5, 4, 0.0101, 1.668848991),
+    (16, 5e-5, 2, 0.0134, 1.658156037),
+    (16, 5e-5, 3, 0.0127, 1.627237201),
+    (16, 5e-5, 4, 0.0125, 1.645898819),
+    (32, 2e-5, 2, 0.0089, 1.641566157),
+    (32, 2e-5, 3, 0.0062, 1.679041266),
+    (32, 2e-5, 4, 0.0047, 1.702563047),
+    (32, 3e-5, 2, 0.0038, 1.739933491),
+    (32, 3e-5, 3, 0.0033, 1.736722231),
+    (32, 3e-5, 4, 0.0035, 1.74689424),
+    (32, 5e-5, 2, 0.0057, 1.752830267),
+    (32, 5e-5, 3, 0.0047, 1.732663035),
+    (32, 5e-5, 4, 0.0043, 1.732450604)
+]
+
+df = pd.DataFrame(data, columns=["Batch Size", "Learning Rate", "Epochs", "Train Loss", "Eval Loss"])
+df["Score"] = 2 - df["Eval Loss"]
+
+fig = go.Figure(data=go.Parcoords(
+    line=dict(color=df['Score'], colorscale='Viridis', showscale=False),
+    dimensions=[
+        dict(range=[6, 34], label='Batch Size', values=df['Batch Size']),
+        dict(range=[1e-5, 6e-5], label='Learning Rate', values=df['Learning Rate']),
+        dict(range=[1.5, 4.5], label='Epochs', values=df['Epochs']),
+        dict(range=[df["Eval Loss"].max(), df["Eval Loss"].min()], label='Eval Loss', values=df['Eval Loss'])
+    ]
+))
+
+fig.update_layout(
+    plot_bgcolor='white',
+    paper_bgcolor='white'
+)
+
+fig.show()
